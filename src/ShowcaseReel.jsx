@@ -16,7 +16,7 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
-export function ShowcaseReel({ src, poster }) {
+export function ShowcaseReel({ src, preview, poster }) {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const headingRef = useRef(null);
@@ -179,7 +179,7 @@ export function ShowcaseReel({ src, poster }) {
           </div>
 
           <div className="reel-frame">
-            <WebGLReel src={src} poster={poster} />
+            <WebGLReel src={src} preview={preview} poster={poster} />
 
             <div className="reel-overlay" aria-hidden="true">
               <span>PLAY</span>

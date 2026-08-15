@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { getLenis } from "./lenis.js";
 
 const works = [
-  { src: "/assets/work1.mp4", poster: "/assets/posters/work1.jpg", title: "Did You Know", tags: "Short-form • Hook • Retention" },
-  { src: "/assets/work2.mp4", poster: "/assets/posters/work2.jpg", title: "XTRM Visuals", tags: "Brand Film • Motion • Grade" },
-  { src: "/assets/work3.mp4", poster: "/assets/posters/work3.jpg", title: "XTRM Visuals II", tags: "Commercial • Pacing • Sound" },
-  { src: "/assets/work4.mp4", poster: "/assets/posters/work4.jpg", title: "Playback", tags: "YouTube • Color • Edit" },
-  { src: "/assets/work5.mp4", poster: "/assets/posters/work5.jpg", title: "Project Five", tags: "Short-form • Edit • Sound" },
-  { src: "/assets/work6.mp4", poster: "/assets/posters/work6.jpg", title: "Project Six", tags: "Commercial • Motion • Grade" },
-  { src: "/assets/work7.mp4", poster: "/assets/posters/work7.jpg", title: "Project Seven", tags: "Documentary • Pacing • Color" },
-  { src: "/assets/work8.mp4", poster: "/assets/posters/work8.jpg", title: "Project Eight", tags: "Brand Film • Hook • Edit" },
+  { src: "/assets/work1.mp4", preview: "/assets/previews/work1.mp4", poster: "/assets/posters/work1.jpg", title: "Did You Know", tags: "Short-form • Hook • Retention" },
+  { src: "/assets/work2.mp4", preview: "/assets/previews/work2.mp4", poster: "/assets/posters/work2.jpg", title: "XTRM Visuals", tags: "Brand Film • Motion • Grade" },
+  { src: "/assets/work3.mp4", preview: "/assets/previews/work3.mp4", poster: "/assets/posters/work3.jpg", title: "XTRM Visuals II", tags: "Commercial • Pacing • Sound" },
+  { src: "/assets/work4.mp4", preview: "/assets/previews/work4.mp4", poster: "/assets/posters/work4.jpg", title: "Playback", tags: "YouTube • Color • Edit" },
+  { src: "/assets/work5.mp4", preview: "/assets/previews/work5.mp4", poster: "/assets/posters/work5.jpg", title: "Project Five", tags: "Short-form • Edit • Sound" },
+  { src: "/assets/work6.mp4", preview: "/assets/previews/work6.mp4", poster: "/assets/posters/work6.jpg", title: "Project Six", tags: "Commercial • Motion • Grade" },
+  { src: "/assets/work7.mp4", preview: "/assets/previews/work7.mp4", poster: "/assets/posters/work7.jpg", title: "Project Seven", tags: "Documentary • Pacing • Color" },
+  { src: "/assets/work8.mp4", preview: "/assets/previews/work8.mp4", poster: "/assets/posters/work8.jpg", title: "Project Eight", tags: "Brand Film • Hook • Edit" },
 ];
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -46,7 +46,7 @@ function Lightbox({ item, onClose }) {
   );
 }
 
-function WorkCard({ src, poster, title, tags, index, onOpen }) {
+function WorkCard({ src, preview, poster, title, tags, index, onOpen }) {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -65,6 +65,7 @@ function WorkCard({ src, poster, title, tags, index, onOpen }) {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             card.classList.add("in");
+            video.play().catch(() => {});
           } else {
             card.classList.remove("in");
             video.pause();
@@ -106,12 +107,12 @@ function WorkCard({ src, poster, title, tags, index, onOpen }) {
       >
         <video
           ref={videoRef}
-          src={src}
+          src={preview || src}
           poster={poster}
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
         />
         <span className="work-play" aria-hidden="true">
           <span className="work-play-icon">▶</span>

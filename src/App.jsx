@@ -276,7 +276,7 @@ export function App() {
         </section>
       </div>
 
-      <ShowcaseReel src="/assets/reel.mp4" poster="/assets/posters/reel.jpg" />
+      <ShowcaseReel src="/assets/reel.mp4" preview="/assets/previews/reel.mp4" poster="/assets/posters/reel.jpg" />
 
       <StatsBand />
 
