@@ -86,12 +86,12 @@ const comments = [
   {
     user: "@tomas",
     text: "Bestest edit in 48 hours.",
-    avatar: "/assets/avatar-mark.jpg",
+    avatar: "/assets/avatar-mark.webp",
   },
   {
     user: "@mark_locus",
     text: "This edit boosted my retention rate by 35%!",
-    avatar: "/assets/avatar-logo.png",
+    avatar: "/assets/avatar-logo.webp",
   },
 ];
 
@@ -161,7 +161,7 @@ export function App() {
               ))}
             </div>
             <div className="nav-notch">
-              <img src="/assets/logo1.png" alt="xtrm visuals" />
+              <img src="/assets/logo1.webp" alt="xtrm visuals" width="68" height="68" />
             </div>
             <div className="nav-group">
               {navRight.map((link) => (
@@ -238,11 +238,10 @@ export function App() {
           </div>
 
           <div className="hero-photo" id="work">
-            {/* Photo goes here — add an <img src="/assets/your-photo.png" alt="Spairo" />. */}
             <div className="photo-glow" aria-hidden="true"></div>
             <div className="photo-stage" aria-hidden="true"></div>
 
-            <img className="photo-img" src="/assets/spairo.png" alt="Spairo" />
+            <img className="photo-img" src="/assets/spairo.webp" alt="Spairo" decoding="async" />
 
             <div className="tool-chips" aria-hidden="true">
               <span className="tool-chip chip-pr">Pr</span>
@@ -257,7 +256,7 @@ export function App() {
           <div className="floating-comments" aria-hidden="true">
             {comments.map((comment, index) => (
               <article className={`comment-card card-${index + 1}`} key={comment.user}>
-                <img src={comment.avatar} alt="" />
+                <img src={comment.avatar} alt="" loading="lazy" decoding="async" />
                 <div>
                   <strong>{comment.user}</strong>
                   <p>{comment.text}</p>
@@ -276,7 +275,7 @@ export function App() {
         </section>
       </div>
 
-      <ShowcaseReel src="/assets/reel.mp4" preview="/assets/previews/reel.mp4" poster="/assets/posters/reel.jpg" />
+      <ShowcaseReel src="/assets/reel.mp4" preview="/assets/previews/reel.mp4" poster="/assets/posters/reel.webp" />
 
       <StatsBand />
 
