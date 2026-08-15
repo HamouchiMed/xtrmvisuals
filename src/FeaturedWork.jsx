@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLenis } from "./lenis.js";
 
 const works = [
@@ -14,7 +14,39 @@ const works = [
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-function WorkCard({ src, title, tags, index }) {
+function Lightbox({ item, onClose }) {
+  useEffect(() => {
+    const lenis = getLenis();
+    lenis?.stop();
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      lenis?.start();
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div className="lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={item.title}>
+      <button className="lightbox-close" onClick={onClose} aria-label="Close video">
+        <span aria-hidden="true">✕</span>
+      </button>
+      <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
+        <video src={item.src} controls autoPlay playsInline />
+        <div className="lightbox-meta">
+          <p className="work-tags">{item.tags}</p>
+          <h3 className="work-title">{item.title}</h3>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WorkCard({ src, title, tags, index, onOpen }) {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -61,9 +93,17 @@ function WorkCard({ src, title, tags, index }) {
 
   return (
     <article className="work-card" ref={cardRef} style={{ "--i": index }}>
-      <div className="work-thumb">
+      <button
+        type="button"
+        className="work-thumb"
+        onClick={onOpen}
+        aria-label={`Play ${title}`}
+      >
         <video ref={videoRef} src={src} muted loop playsInline preload="metadata" />
-      </div>
+        <span className="work-play" aria-hidden="true">
+          <span className="work-play-icon">▶</span>
+        </span>
+      </button>
       <p className="work-tags">{tags}</p>
       <h3 className="work-title">{title}</h3>
     </article>
@@ -74,6 +114,7 @@ export function FeaturedWork() {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const trackRef = useRef(null);
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -148,10 +189,12 @@ export function FeaturedWork() {
 
         <div className="work-track" ref={trackRef}>
           {works.map((w, i) => (
-            <WorkCard key={w.src} {...w} index={i} />
+            <WorkCard key={w.src} {...w} index={i} onOpen={() => setActive(w)} />
           ))}
         </div>
       </div>
+
+      {active && <Lightbox item={active} onClose={() => setActive(null)} />}
     </section>
   );
 }
