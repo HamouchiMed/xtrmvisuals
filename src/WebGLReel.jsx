@@ -50,7 +50,7 @@ function supportsWebGL() {
   }
 }
 
-export function WebGLReel({ src }) {
+export function WebGLReel({ src, poster }) {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const [useFallback, setUseFallback] = useState(false);
@@ -167,6 +167,7 @@ export function WebGLReel({ src }) {
         ref={videoRef}
         className={useFallback ? "reel-fallback-video" : "reel-hidden-video"}
         src={src}
+        poster={poster}
         muted
         loop
         playsInline

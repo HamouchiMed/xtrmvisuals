@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { getLenis } from "./lenis.js";
 
 const works = [
-  { src: "/assets/work1.mp4", title: "Did You Know", tags: "Short-form • Hook • Retention" },
-  { src: "/assets/work2.mp4", title: "XTRM Visuals", tags: "Brand Film • Motion • Grade" },
-  { src: "/assets/work3.mp4", title: "XTRM Visuals II", tags: "Commercial • Pacing • Sound" },
-  { src: "/assets/work4.mp4", title: "Playback", tags: "YouTube • Color • Edit" },
-  { src: "/assets/work5.mp4", title: "Project Five", tags: "Short-form • Edit • Sound" },
-  { src: "/assets/work6.mp4", title: "Project Six", tags: "Commercial • Motion • Grade" },
-  { src: "/assets/work7.mp4", title: "Project Seven", tags: "Documentary • Pacing • Color" },
-  { src: "/assets/work8.mp4", title: "Project Eight", tags: "Brand Film • Hook • Edit" },
+  { src: "/assets/work1.mp4", poster: "/assets/posters/work1.jpg", title: "Did You Know", tags: "Short-form • Hook • Retention" },
+  { src: "/assets/work2.mp4", poster: "/assets/posters/work2.jpg", title: "XTRM Visuals", tags: "Brand Film • Motion • Grade" },
+  { src: "/assets/work3.mp4", poster: "/assets/posters/work3.jpg", title: "XTRM Visuals II", tags: "Commercial • Pacing • Sound" },
+  { src: "/assets/work4.mp4", poster: "/assets/posters/work4.jpg", title: "Playback", tags: "YouTube • Color • Edit" },
+  { src: "/assets/work5.mp4", poster: "/assets/posters/work5.jpg", title: "Project Five", tags: "Short-form • Edit • Sound" },
+  { src: "/assets/work6.mp4", poster: "/assets/posters/work6.jpg", title: "Project Six", tags: "Commercial • Motion • Grade" },
+  { src: "/assets/work7.mp4", poster: "/assets/posters/work7.jpg", title: "Project Seven", tags: "Documentary • Pacing • Color" },
+  { src: "/assets/work8.mp4", poster: "/assets/posters/work8.jpg", title: "Project Eight", tags: "Brand Film • Hook • Edit" },
 ];
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -36,7 +36,7 @@ function Lightbox({ item, onClose }) {
         <span aria-hidden="true">✕</span>
       </button>
       <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
-        <video src={item.src} controls autoPlay playsInline />
+        <video src={item.src} poster={item.poster} controls autoPlay playsInline />
         <div className="lightbox-meta">
           <p className="work-tags">{item.tags}</p>
           <h3 className="work-title">{item.title}</h3>
@@ -46,7 +46,7 @@ function Lightbox({ item, onClose }) {
   );
 }
 
-function WorkCard({ src, title, tags, index, onOpen }) {
+function WorkCard({ src, poster, title, tags, index, onOpen }) {
   const cardRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -57,7 +57,6 @@ function WorkCard({ src, title, tags, index, onOpen }) {
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       card.classList.add("in");
-      video.play().catch(() => {});
       return;
     }
 
@@ -66,7 +65,6 @@ function WorkCard({ src, title, tags, index, onOpen }) {
         entries.forEach((e) => {
           if (e.isIntersecting) {
             card.classList.add("in");
-            video.play().catch(() => {});
           } else {
             card.classList.remove("in");
             video.pause();
@@ -82,15 +80,39 @@ function WorkCard({ src, title, tags, index, onOpen }) {
     };
   }, []);
 
+  const handleMouseEnter = () => {
+    const video = videoRef.current;
+    if (video) video.play().catch(() => {});
+  };
+
+  const handleMouseLeave = () => {
+    const video = videoRef.current;
+    if (video) video.pause();
+  };
+
   return (
-    <article className="work-card" ref={cardRef} style={{ "--i": index }}>
+    <article
+      className="work-card"
+      ref={cardRef}
+      style={{ "--i": index }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <button
         type="button"
         className="work-thumb"
         onClick={onOpen}
         aria-label={`Play ${title}`}
       >
-        <video ref={videoRef} src={src} muted loop playsInline preload="none" />
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          muted
+          loop
+          playsInline
+          preload="none"
+        />
         <span className="work-play" aria-hidden="true">
           <span className="work-play-icon">▶</span>
         </span>
