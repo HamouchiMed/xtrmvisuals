@@ -10,6 +10,7 @@ import { Testimonials } from "./Testimonials.jsx";
 import { Contact } from "./Contact.jsx";
 import { Scrollbar } from "./Scrollbar.jsx";
 import { Starfield } from "./Starfield.jsx";
+import { Preloader } from "./Preloader.jsx";
 import { RotatingWord } from "./RotatingWord.jsx";
 import { getLenis } from "./lenis.js";
 
@@ -141,6 +142,7 @@ export function App() {
 
   return (
     <>
+      <Preloader />
       <Starfield />
       <main className="site-shell">
         <Scrollbar />
