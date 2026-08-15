@@ -171,7 +171,7 @@ export function WebGLReel({ src }) {
         loop
         playsInline
         autoPlay
-        preload="auto"
+        preload="metadata"
       />
     </div>
   );

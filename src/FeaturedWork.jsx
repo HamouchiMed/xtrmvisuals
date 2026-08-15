@@ -65,29 +65,20 @@ function WorkCard({ src, title, tags, index, onOpen }) {
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            card.classList.add("in"); // reveal as it pans into view
+            card.classList.add("in");
             video.play().catch(() => {});
           } else {
-            card.classList.remove("in"); // hide as it pans out (reverse)
+            card.classList.remove("in");
             video.pause();
           }
         });
       },
-      { threshold: 0.2 },
+      { threshold: 0.1 },
     );
     io.observe(card);
 
-    const fallback = setTimeout(() => {
-      const r = card.getBoundingClientRect();
-      if (r.left < window.innerWidth && r.right > 0) {
-        card.classList.add("in");
-        video.play().catch(() => {});
-      }
-    }, 1200);
-
     return () => {
       io.disconnect();
-      clearTimeout(fallback);
     };
   }, []);
 
@@ -99,7 +90,7 @@ function WorkCard({ src, title, tags, index, onOpen }) {
         onClick={onOpen}
         aria-label={`Play ${title}`}
       >
-        <video ref={videoRef} src={src} muted loop playsInline preload="metadata" />
+        <video ref={videoRef} src={src} muted loop playsInline preload="none" />
         <span className="work-play" aria-hidden="true">
           <span className="work-play-icon">▶</span>
         </span>
