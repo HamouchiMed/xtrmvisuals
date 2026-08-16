@@ -66,11 +66,6 @@ export function WhyMe() {
     const list = listRef.current;
     const line = lineRef.current;
     if (!list || !line) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      line.style.transform = "scaleY(1)";
-      return;
-    }
-
     let raf = 0;
     const update = () => {
       raf = 0;

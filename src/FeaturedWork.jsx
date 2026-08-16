@@ -136,7 +136,6 @@ export function FeaturedWork() {
     const track = trackRef.current;
     if (!section || !stage || !track) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
     let disposed = false;
     let enabled = true;
@@ -144,7 +143,7 @@ export function FeaturedWork() {
 
     const layout = () => {
       enabled = stage.clientWidth > 720; // horizontal pin on non-tiny screens
-      if (reduced || !enabled) {
+      if (!enabled) {
         section.style.height = "";
         track.style.transform = "";
         return;
@@ -165,7 +164,7 @@ export function FeaturedWork() {
     layout();
     apply();
 
-    if (reduced || !enabled) return;
+    if (!enabled) return;
 
     getLenis();
 

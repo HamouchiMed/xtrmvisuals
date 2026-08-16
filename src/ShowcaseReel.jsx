@@ -24,7 +24,6 @@ export function ShowcaseReel({ src, preview, poster }) {
   const frameRef = useRef(null);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const section = sectionRef.current;
     const stage = stageRef.current;
     const heading = headingRef.current;
@@ -104,7 +103,7 @@ export function ShowcaseReel({ src, preview, poster }) {
 
     layout();
 
-    if (reduced || !enabled) {
+    if (!enabled) {
       if (enabled) apply(0);
       return;
     }

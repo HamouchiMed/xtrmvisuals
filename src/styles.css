@@ -5,6 +5,28 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Lenis smooth-scroll required styles (the library needs these to drive scroll) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1155,11 +1177,9 @@ h1 span {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* keep the gentle fade/slide reveal; only drop the blur */
   .work-card {
     filter: none;
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 }
 
@@ -1903,9 +1923,10 @@ h1 span {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* stop the infinite loops, keep the gentle one-shot reveal */
   .whyme-glow,
   .whyme-heading { animation: none; }
-  .whyme-item { filter: none; opacity: 1; transform: none; }
+  .whyme-item { filter: none; }
 }
 
 @media (max-width: 640px) {
@@ -2075,9 +2096,8 @@ h1 span {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* keep the gentle group reveal + bar fill; only stop the shimmer loop */
   .journey-heading { animation: none; }
-  .skill-group { opacity: 1; transform: none; }
-  .bar-pct { opacity: 1; }
 }
 
 /* --- Testimonials + logo marquee --- */
@@ -2185,14 +2205,10 @@ h1 span {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* infinite marquees off; keep the gentle service-row reveal */
   .marquee-track,
   .logo-track {
     animation: none;
-  }
-
-  .service-row {
-    opacity: 1;
-    transform: none;
   }
 }
 

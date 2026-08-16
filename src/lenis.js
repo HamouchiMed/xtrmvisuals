@@ -8,9 +8,6 @@ let instance = null;
 export function getLenis() {
   if (instance) return instance;
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced) return null;
-
   instance = new Lenis({ lerp: 0.1, wheelMultiplier: 1 });
 
   const raf = (time) => {

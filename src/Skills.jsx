@@ -72,16 +72,6 @@ function SkillGroup({ group, items }) {
       target: Number(row.dataset.level),
     }));
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      rows.forEach((r) => {
-        r.fill.style.width = `${r.target}%`;
-        r.pct.textContent = `${r.target}%`;
-        r.pct.style.opacity = "1";
-      });
-      return;
-    }
-
     let rafs = [];
     let timers = [];
     let runId = 0; // bumps on every play/reset so stale loops abort

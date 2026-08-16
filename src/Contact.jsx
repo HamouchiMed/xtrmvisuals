@@ -20,9 +20,12 @@ const socials = [
   { label: "X", href: "https://x.com/Spairo7777" },
 ];
 
-/* --- SETUP ---
-   1. Go to https://web3forms.com, enter your email, get a free Access Key (instant, no account).
-   2. Paste it below. Submissions will be emailed to you. */
+/* --- SETUP: where contact-form messages get delivered ---
+   Messages are emailed to whatever address the Web3Forms access key belongs to.
+   To forward submissions to abderrahmaneaboulayoun4@gmail.com:
+     1. Go to https://web3forms.com and enter abderrahmaneaboulayoun4@gmail.com
+        (free, instant, no account needed).
+     2. Check that inbox for the Access Key and paste it below. */
 const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
 
 export function Contact() {
@@ -41,6 +44,7 @@ export function Contact() {
           access_key: WEB3FORMS_KEY,
           subject: `New inquiry: ${data.subject || "Contact form"}`,
           from_name: data.name,
+          replyto: data.email,
           ...data,
         }),
       });
