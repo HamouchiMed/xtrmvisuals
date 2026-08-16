@@ -945,6 +945,12 @@ h1 span {
   .social-proof {
     justify-content: center;
   }
+
+  /* Desktop-only floating flourishes clutter/overlap the photo on phones */
+  .tool-chips,
+  .floating-comments {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
