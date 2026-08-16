@@ -913,27 +913,89 @@ h1 span {
   }
 
   .hero-photo {
-    min-height: 320px;
+    min-height: 340px;
     order: -1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  /* Contain the photo inside its column instead of the desktop off-screen bleed */
+  .hero-photo > img {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    height: 340px;
+    max-width: 100%;
+    object-position: center bottom;
+    margin: 0 auto;
+    transform: none !important;
   }
 
   .photo-placeholder {
     min-height: 300px;
   }
-}
 
-@media (max-width: 520px) {
-  .nav-notch {
-    width: 130px;
+  .hero-actions {
+    justify-content: center;
   }
 
+  .social-proof {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-bar {
+    padding: 0 12px;
+  }
+
+  /* shrink the desktop inner padding, but keep enough to clear the logo notch */
   .nav-group {
-    gap: 18px;
+    gap: 14px;
+    padding-top: 22px;
+  }
+
+  .nav-group:first-child {
+    padding-right: 68px;
+  }
+
+  .nav-group:last-child {
+    padding-left: 68px;
   }
 
   .nav-links a {
     font-size: 11px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+  }
+
+  .nav-notch {
+    width: 112px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-group {
+    gap: 10px;
+  }
+
+  .nav-group:first-child {
+    padding-right: 58px;
+  }
+
+  .nav-group:last-child {
+    padding-left: 58px;
+  }
+
+  .nav-links a {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .nav-notch {
+    width: 96px;
   }
 }
 
