@@ -700,55 +700,53 @@ h1 span {
   width: 58px;
 }
 
-/* Adobe-style dark squircles, split 3 left / 3 right to frame the portrait */
-/* Left column — in the free space to the left of the person */
+/* Adobe-style: dark squircle + brand-colored letters, clustered constellation */
 .chip-pr {
   animation: float-b 7s ease-in-out infinite;
   background: linear-gradient(160deg, #2b0a4a, #150826);
   color: #e59aff;
-  right: 62%;
-  top: 22%;
+  right: 16%;
+  top: 34%;
+}
+
+.chip-ae {
+  animation: float-a 6.4s ease-in-out infinite 0.4s;
+  background: linear-gradient(160deg, #10123f, #070722);
+  color: #9d9dff;
+  right: 28%;
+  top: 45%;
 }
 
 .chip-ps {
   animation: float-a 7.6s ease-in-out infinite 0.2s;
   background: linear-gradient(160deg, #012036, #01111d);
   color: #38aaff;
-  right: 68%;
-  top: 48%;
-}
-
-.chip-ai {
-  animation: float-b 8s ease-in-out infinite 0.3s;
-  background: linear-gradient(160deg, #331000, #1c0900);
-  color: #ff9e2c;
-  right: 62%;
-  top: 74%;
-}
-
-/* Right column — hugging the right edge, around the portrait */
-.chip-ae {
-  animation: float-a 6.4s ease-in-out infinite 0.4s;
-  background: linear-gradient(160deg, #10123f, #070722);
-  color: #9d9dff;
-  right: 6%;
-  top: 22%;
+  right: 35%;
+  top: 56%;
 }
 
 .chip-au {
   animation: float-b 6.8s ease-in-out infinite 0.6s;
   background: linear-gradient(160deg, #013a30, #011f19);
   color: #12e6a6;
-  right: 1%;
-  top: 48%;
+  right: 35%;
+  top: 67%;
+}
+
+.chip-ai {
+  animation: float-b 8s ease-in-out infinite 0.3s;
+  background: linear-gradient(160deg, #331000, #1c0900);
+  color: #ff9e2c;
+  right: 28%;
+  top: 78%;
 }
 
 .chip-dv {
   animation: float-a 7.2s ease-in-out infinite 0.5s;
   background: linear-gradient(160deg, #2a0d4d, #180830);
   color: #ff86dd;
-  right: 6%;
-  top: 74%;
+  right: 16%;
+  top: 89%;
 }
 
 /* Scroll-down cue */
@@ -957,11 +955,26 @@ h1 span {
     justify-content: center;
   }
 
-  /* Desktop-only floating flourishes clutter/overlap the photo on phones */
-  .tool-chips,
+  /* Comment cards clutter the photo on phones; keep them desktop-only */
   .floating-comments {
     display: none;
   }
+
+  /* Tool chips: smaller, split 3 left / 3 right around the mobile portrait */
+  .tool-chip {
+    width: 44px;
+    height: 44px;
+    font-size: 17px;
+    border-radius: 12px;
+  }
+
+  .chip-pr { right: 80%; top: 8%; }
+  .chip-ps { right: 85%; top: 38%; }
+  .chip-ai { right: 80%; top: 68%; }
+
+  .chip-ae { right: 6%; top: 8%; }
+  .chip-au { right: 1%; top: 38%; }
+  .chip-dv { right: 6%; top: 68%; }
 }
 
 @media (max-width: 640px) {
