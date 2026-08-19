@@ -380,21 +380,21 @@ img {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   margin: 0 auto;
   max-width: 1120px;
-  min-height: calc(100vh - 130px);
+  min-height: calc(100vh - 120px);
   padding: 12px clamp(20px, 4vw, 54px) 0;
   position: relative;
 }
 
 .hero-copy {
-  padding-bottom: 40px;
+  padding-bottom: 24px;
 }
 
 h1 {
   color: #ffffff;
-  font-size: clamp(48px, 6vw, 78px);
+  font-size: clamp(36px, 4.4vw, 60px);
   font-weight: 800;
   letter-spacing: -0.01em;
-  line-height: 1.02;
+  line-height: 1.04;
   margin: 0;
 }
 
@@ -404,17 +404,17 @@ h1 span {
   background-clip: text;
   color: transparent;
   display: block;
-  font-size: clamp(26px, 3.4vw, 42px);
+  font-size: clamp(20px, 2.5vw, 32px);
   font-weight: 700;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .hero-subtitle {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 15px;
-  line-height: 1.7;
-  margin: 26px 0 34px;
-  max-width: 380px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  margin: 18px 0 26px;
+  max-width: 360px;
 }
 
 /* Availability pill */
@@ -429,8 +429,8 @@ h1 span {
   font-weight: 500;
   gap: 9px;
   letter-spacing: 0.04em;
-  margin-bottom: 22px;
-  padding: 8px 16px;
+  margin-bottom: 16px;
+  padding: 7px 15px;
 }
 
 .avail-dot {
