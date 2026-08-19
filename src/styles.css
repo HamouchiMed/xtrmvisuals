@@ -808,6 +808,15 @@ h1 span {
   pointer-events: none;
   position: absolute;
   z-index: 2;
+  display: none; /* shown only on large desktop monitors (see media query) */
+}
+
+/* Only big screens have room for the floating cards without covering the
+   face or the clients row — verified clear at 1920x1080. */
+@media (min-width: 1600px) and (min-height: 940px) {
+  .floating-comments {
+    display: block;
+  }
 }
 
 .comment-card {
@@ -861,13 +870,6 @@ h1 span {
   bottom: 4%;
   left: 1%;
   animation: float-b 7s ease-in-out infinite 0.4s;
-}
-
-/* Comment cards need room; hide them when the window is too narrow to fit */
-@media (max-width: 1100px) {
-  .floating-comments {
-    display: none;
-  }
 }
 
 @keyframes float-a {
