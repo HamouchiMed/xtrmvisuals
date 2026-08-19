@@ -808,12 +808,13 @@ h1 span {
   pointer-events: none;
   position: absolute;
   z-index: 2;
-  display: none; /* shown only on large desktop monitors (see media query) */
+  display: none; /* shown wherever there's room — see media query */
 }
 
-/* Only big screens have room for the floating cards without covering the
-   face or the clients row — verified clear at 1920x1080. */
-@media (min-width: 1600px) and (min-height: 940px) {
+/* Show the floating cards whenever the viewport is big enough that they clear
+   the face and the clients row. Verified clean at 1300x880 and 1900x929;
+   collisions only appear on shorter (<~860px tall) screens. */
+@media (min-width: 1280px) and (min-height: 860px) {
   .floating-comments {
     display: block;
   }
