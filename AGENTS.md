@@ -10,5 +10,6 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Durable prototype feedback
 
-- The desktop hero should be composed for the 1920×1080 display with a roughly 1400px-wide preview viewport; the portrait must remain prominently visible without severe right-side clipping.
+- The desktop hero should be composed for the 1920×1080 display with a roughly 1400px-wide preview viewport; the portrait must remain prominent on the right without severe clipping, leaving the simple badge arc clear on its left.
 - Keep the hero software badges in their original simple text-chip style unless a new placement is explicitly requested.
+- The hero composition should adapt fluidly across desktop, laptop, tablet, and mobile widths while preserving the same portrait-and-badge visual language.

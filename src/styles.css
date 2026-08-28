@@ -814,7 +814,7 @@ h1 span {
 /* Show the floating cards whenever the viewport is big enough that they clear
    the face and the clients row. Verified clean at 1300x880 and 1900x929;
    collisions only appear on shorter (<~860px tall) screens. */
-@media (min-width: 1600px) and (min-height: 860px) {
+@media (min-width: 1280px) and (min-height: 860px) {
   .floating-comments {
     display: block;
   }
@@ -908,10 +908,50 @@ h1 span {
   }
 }
 
-/* Roomy desktop monitors: restore the prominent "screenshot-3" hero.
-   Same gate as the floating comment cards — only fires when there's genuine
-   room (wide AND tall), so laptops / short windows keep the compact layout. */
-@media (min-width: 1280px) and (min-height: 860px) {
+/* Laptop and smaller desktop layouts keep the same composition while reducing
+   the portrait bleed so the content remains visible at narrower widths. */
+@media (min-width: 821px) and (max-width: 1599px) {
+  .hero {
+    min-height: calc(100vh - 120px);
+    padding-inline: clamp(20px, 3vw, 42px);
+  }
+
+  .hero-copy {
+    padding-bottom: 28px;
+  }
+
+  h1 {
+    font-size: clamp(42px, 5vw, 64px);
+  }
+
+  h1 span {
+    font-size: clamp(24px, 3vw, 36px);
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    margin: 20px 0 28px;
+    max-width: 360px;
+  }
+
+  .hero-photo > img {
+    bottom: -5%;
+    right: -28%;
+    width: 116%;
+    height: 116%;
+  }
+
+  .chip-pr { right: 38%; top: 34%; }
+  .chip-ae { right: 50%; top: 45%; }
+  .chip-ps { right: 56%; top: 56%; }
+  .chip-au { right: 56%; top: 67%; }
+  .chip-ai { right: 50%; top: 78%; }
+  .chip-dv { right: 38%; top: 89%; }
+}
+
+/* Roomy desktop monitors: restore the prominent large-screen framing only
+   when there is enough width for the portrait bleed. */
+@media (min-width: 1600px) and (min-height: 860px) {
   .hero {
     min-height: calc(100vh - 130px);
   }
@@ -945,7 +985,7 @@ h1 span {
   /* Keep the portrait prominent while preserving the full figure on wide screens. */
   .hero-photo > img {
     bottom: -8%;
-    right: -25%;
+    right: -90%;
     width: 112%;
     height: 112%;
     -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
@@ -953,12 +993,12 @@ h1 span {
   }
 
   /* Keep the simple badges in a clean vertical arc to the portrait's left. */
-  .chip-pr { right: 58%; top: 34%; }
-  .chip-ae { right: 70%; top: 45%; }
-  .chip-ps { right: 76%; top: 56%; }
-  .chip-au { right: 76%; top: 67%; }
-  .chip-ai { right: 70%; top: 78%; }
-  .chip-dv { right: 58%; top: 89%; }
+  .chip-pr { right: 38%; top: 34%; }
+  .chip-ae { right: 50%; top: 45%; }
+  .chip-ps { right: 56%; top: 56%; }
+  .chip-au { right: 56%; top: 67%; }
+  .chip-ai { right: 50%; top: 78%; }
+  .chip-dv { right: 38%; top: 89%; }
 }
 
 /* --- Responsive --- */
