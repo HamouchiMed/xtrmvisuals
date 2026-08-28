@@ -688,7 +688,6 @@ h1 span {
 .tool-chip {
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   font-family: Georgia, "Times New Roman", serif;
@@ -697,6 +696,7 @@ h1 span {
   height: 58px;
   justify-content: center;
   position: absolute;
+  border-radius: 16px;
   width: 58px;
 }
 
@@ -814,7 +814,7 @@ h1 span {
 /* Show the floating cards whenever the viewport is big enough that they clear
    the face and the clients row. Verified clean at 1300x880 and 1900x929;
    collisions only appear on shorter (<~860px tall) screens. */
-@media (min-width: 1280px) and (min-height: 860px) {
+@media (min-width: 1600px) and (min-height: 860px) {
   .floating-comments {
     display: block;
   }
@@ -942,23 +942,23 @@ h1 span {
     padding: 8px 16px;
   }
 
-  /* Full-height portrait with the off-screen bleed (screenshot-3 framing) */
+  /* Keep the portrait prominent while preserving the full figure on wide screens. */
   .hero-photo > img {
-    bottom: -14%;
-    right: -80%;
-    width: 128%;
-    height: 128%;
-    -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+    bottom: -8%;
+    right: -25%;
+    width: 112%;
+    height: 112%;
+    -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 86%, transparent 100%);
   }
 
-  /* Tool chips: clustered constellation hugging the portrait */
-  .chip-pr { right: 16%; top: 34%; }
-  .chip-ae { right: 28%; top: 45%; }
-  .chip-ps { right: 35%; top: 56%; }
-  .chip-au { right: 35%; top: 67%; }
-  .chip-ai { right: 28%; top: 78%; }
-  .chip-dv { right: 16%; top: 89%; }
+  /* Keep the simple badges in a clean vertical arc to the portrait's left. */
+  .chip-pr { right: 58%; top: 34%; }
+  .chip-ae { right: 70%; top: 45%; }
+  .chip-ps { right: 76%; top: 56%; }
+  .chip-au { right: 76%; top: 67%; }
+  .chip-ai { right: 70%; top: 78%; }
+  .chip-dv { right: 58%; top: 89%; }
 }
 
 /* --- Responsive --- */

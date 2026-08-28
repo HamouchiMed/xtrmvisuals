@@ -99,6 +99,13 @@ const comments = [
 export function App() {
   const heroRef = useRef(null);
 
+  // Start the shared scroll engine at the app boundary. Several sections use
+  // its frame loop for scroll-driven transforms; initializing it here prevents
+  // those effects from depending on mount order.
+  useEffect(() => {
+    getLenis();
+  }, []);
+
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
