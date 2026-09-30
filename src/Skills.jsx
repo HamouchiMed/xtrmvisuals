@@ -70,15 +70,10 @@ function SkillGroup({ group, items, index }) {
       pct: row.querySelector(".bar-pct"),
       fill: row.querySelector(".bar-fill"),
     }));
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
 
     const run = () => {
       el.classList.add("in");
-      if (reduced) {
-        rows.forEach((r, i) => (r.pct.textContent = `${items[i].level}%`));
-        return;
-      }
       // The CSS transition drives the bars; the numbers read the live fill
       // width so the two can never drift apart.
       const t0 = performance.now();

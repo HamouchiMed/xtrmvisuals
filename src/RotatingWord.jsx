@@ -9,7 +9,6 @@ export function RotatingWord({ words, interval = 2400 }) {
 
   useEffect(() => {
     if (words.length <= 1) return undefined;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
     let id = 0;
     // start cycling once the launch screen has lifted, so the first word is seen
     const off = onReady(() => {

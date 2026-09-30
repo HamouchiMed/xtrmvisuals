@@ -23,7 +23,6 @@ export function Preloader() {
   const [phase, setPhase] = useState("loading"); // loading | leaving | gone
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Always open on the hero; the launch screen covers any restored position.
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     if (!location.hash) window.scrollTo(0, 0);
@@ -39,7 +38,7 @@ export function Preloader() {
     jobs.forEach((j) => j.then(() => (loaded += 1)));
 
     const start = performance.now();
-    const minTime = reduced ? 150 : 1100;
+    const minTime = 1100;
     const maxTime = 7000;
     let display = 0;
     let raf = 0;
@@ -52,8 +51,8 @@ export function Preloader() {
       setCount(100);
       setPhase("leaving");
       // hero intro starts while the curtain lifts
-      setTimeout(markReady, reduced ? 0 : 380);
-      setTimeout(() => setPhase("gone"), reduced ? 250 : 1300);
+      setTimeout(markReady, 380);
+      setTimeout(() => setPhase("gone"), 1300);
     };
 
     const tick = () => {

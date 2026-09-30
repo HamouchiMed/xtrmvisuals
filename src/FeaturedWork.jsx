@@ -26,10 +26,9 @@ function WorkCard({ item, index }) {
     const card = cardRef.current;
     const video = videoRef.current;
     if (!card || !video) return undefined;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && !reduced) video.play().catch(() => {});
+        if (e.isIntersecting) video.play().catch(() => {});
         else video.pause();
       },
       { threshold: 0.35 },

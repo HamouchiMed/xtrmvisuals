@@ -112,7 +112,6 @@ export function Starfield() {
     const stars = new Mesh(gl, { mode: gl.POINTS, geometry, program });
     stars.rotation.z = Math.PI / 4;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lenis = getLenis();
     let mx = 0;
     let my = 0;
@@ -146,8 +145,7 @@ export function Starfield() {
       raf = requestAnimationFrame(loop);
     };
 
-    if (reduced) renderer.render({ scene: stars, camera });
-    else raf = requestAnimationFrame(loop);
+    raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);

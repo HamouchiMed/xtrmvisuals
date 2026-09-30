@@ -26,8 +26,7 @@ export function Hero() {
   useEffect(() => {
     const hero = heroRef.current;
     const s = state.current;
-    s.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    s.fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    s.fine =window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     s.layers = [
       [hero.querySelector(".tool-chips"), 22],
       [hero.querySelector(".floating-comments"), 14],
@@ -48,7 +47,7 @@ export function Hero() {
   useVisibleFrame(heroRef, () => {
     const hero = heroRef.current;
     const s = state.current;
-    if (!hero || !s.layers || s.reduced) return;
+    if (!hero || !s.layers) return;
 
     if (s.fine) {
       s.cx += (s.tx - s.cx) * 0.06;

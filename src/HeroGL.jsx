@@ -89,8 +89,7 @@ export function HeroGL({ glowRef }) {
     const holder = holderRef.current;
     if (!holder || !supportsWebGL()) return undefined;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;
+    let dpr =Math.min(window.devicePixelRatio || 1, 2) * 0.5;
     const renderer = new Renderer({ dpr, alpha: false, antialias: false, powerPreference: "low-power" });
     const gl = renderer.gl;
     holder.appendChild(gl.canvas);
@@ -166,10 +165,6 @@ export function HeroGL({ glowRef }) {
     };
 
     const io = new IntersectionObserver(([e]) => {
-      if (reduced) {
-        requestAnimationFrame(draw);
-        return;
-      }
       if (e.isIntersecting && !running) {
         running = true;
         last = 0;

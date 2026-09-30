@@ -3352,33 +3352,6 @@ a:hover > .roll > span {
   height: 20px;
 }
 
-/* =========================================================================
-   Reduced motion — keep content, drop the looping and scroll-linked motion
-   ========================================================================= */
-@media (prefers-reduced-motion: reduce) {
-  .avail-dot,
-  .talk-dot,
-  .hero-grain,
-  .tool-chip,
-  .comment-card,
-  .scroll-cue-line::after,
-  .whyme-glow,
-  .marquee-track,
-  .logo-track {
-    animation: none !important;
-  }
-
-  [data-reveal] .w > span,
-  [data-reveal="fade"],
-  .whyme-item,
-  .skill-group {
-    transition-duration: 0.01s !important;
-    transition-delay: 0s !important;
-  }
-
-  .preloader,
-  .menu,
-  .menu-t > span {
-    transition-duration: 0.2s !important;
-  }
-}
+/* Note: motion intentionally runs even when the OS reports
+   prefers-reduced-motion — many desktops report it by default and the site
+   must look the same everywhere (see AGENTS.md). */

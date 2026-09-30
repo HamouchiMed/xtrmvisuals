@@ -24,11 +24,6 @@ export function useRevealRoot() {
       el.querySelectorAll(".w > span").forEach((s, i) => s.style.setProperty("--wi", i)),
     );
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      els.forEach((el) => el.classList.add("is-in"));
-      return undefined;
-    }
-
     let io = null;
     const off = onReady(() => {
       io = new IntersectionObserver(

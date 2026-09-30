@@ -15,7 +15,6 @@ export function Cursor() {
     const label = labelRef.current;
     if (!fine.matches || !cursor || !label) return undefined;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const html = document.documentElement;
     html.classList.add("has-cursor");
 
@@ -43,7 +42,6 @@ export function Cursor() {
         cursor.classList.add("is-visible");
       }
 
-      if (reduced) return;
       const m = e.target.closest?.("[data-magnetic]");
       if (m !== magnet) {
         release();
@@ -82,9 +80,8 @@ export function Cursor() {
     const onUp = () => cursor.classList.remove("is-down");
 
     const loop = () => {
-      const k = reduced ? 1 : 0.22;
-      cx += (x - cx) * k;
-      cy += (y - cy) * k;
+      cx += (x - cx) * 0.22;
+      cy += (y - cy) * 0.22;
       cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
       raf = requestAnimationFrame(loop);
     };

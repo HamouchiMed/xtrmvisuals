@@ -9,12 +9,9 @@ export function getLenis() {
   if (instance) return instance;
   if (typeof window === "undefined") return null;
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  instance = new Lenis({
-    lerp: reduced ? 1 : 0.095,
-    smoothWheel: !reduced,
-    wheelMultiplier: 1,
-  });
+  // Always smooth, even when the OS reports "reduce motion": many desktops
+  // report it by default and the site should feel the same everywhere.
+  instance = new Lenis({ lerp: 0.095, smoothWheel: true, wheelMultiplier: 1 });
 
   const raf = (time) => {
     if (!instance) return;

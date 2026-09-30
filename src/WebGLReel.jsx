@@ -63,8 +63,7 @@ export function WebGLReel({ src, preview, poster }) {
   const [useFallback, setUseFallback] = useState(false);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || !supportsWebGL()) {
+    if (!supportsWebGL()) {
       setUseFallback(true);
       const v = videoRef.current;
       if (v) {
