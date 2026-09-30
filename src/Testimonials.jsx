@@ -1,3 +1,5 @@
+import { Words } from "./reveal.jsx";
+
 const testimonials = [
   { quote: "Bestest edit in 48 hours. Absolute magic.", name: "Tomas", role: "Creator" },
   { quote: "This edit boosted my retention rate by 35%.", name: "Mark", role: "YouTuber" },
@@ -7,47 +9,61 @@ const testimonials = [
   { quote: "Reliable, creative, and lightning fast.", name: "Omar", role: "Agency Lead" },
 ];
 
-const brands = [
-  "SODA",
-  "NOVA",
-  "PULSE",
-  "ORYZO",
-  "VERTEX",
-  "LUMEN",
-  "APEX",
-  "DRIFT",
-];
+const brands = ["SODA", "NOVA", "PULSE", "ORYZO", "VERTEX", "LUMEN", "APEX", "DRIFT"];
+
+function Card({ t }) {
+  return (
+    <figure className="testi-card">
+      <span className="testi-mark" aria-hidden="true">
+        “
+      </span>
+      <blockquote>{t.quote}</blockquote>
+      <figcaption>
+        <span className="testi-avatar" aria-hidden="true">
+          {t.name[0]}
+        </span>
+        <span>
+          <span className="testi-name">{t.name}</span>
+          <span className="mono testi-role">{t.role}</span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
 
 export function Testimonials() {
-  const row = [...testimonials, ...testimonials];
-  const logos = [...brands, ...brands];
-
   return (
     <section className="testimonials" aria-label="Testimonials">
       <div className="testi-head">
-        <p className="section-eyebrow">Testimonials</p>
-        <h2 className="testi-heading">Trusted by creators & brands</h2>
+        <p className="mono section-tag">( 08 — Kind words )</p>
+        <h2 className="section-heading" data-reveal>
+          <Words text="Trusted by creators" /> <em className="serif-accent"><Words text="& brands" /></em>
+        </h2>
       </div>
+
+      {/* Screen readers get the list once; the looping copy is decorative. */}
+      <ul className="sr-only">
+        {testimonials.map((t) => (
+          <li key={t.name}>
+            “{t.quote}” — {t.name}, {t.role}
+          </li>
+        ))}
+      </ul>
 
       <div className="marquee" aria-hidden="true">
         <div className="marquee-track">
-          {row.map((t, i) => (
-            <figure className="testi-card" key={i}>
-              <blockquote>"{t.quote}"</blockquote>
-              <figcaption>
-                <span className="testi-name">{t.name}</span>
-                <span className="testi-role">{t.role}</span>
-              </figcaption>
-            </figure>
+          {[...testimonials, ...testimonials].map((t, i) => (
+            <Card t={t} key={i} />
           ))}
         </div>
       </div>
 
       <div className="logo-marquee" aria-hidden="true">
         <div className="logo-track">
-          {logos.map((b, i) => (
+          {[...brands, ...brands].map((b, i) => (
             <span className="logo-item" key={i}>
               {b}
+              <span className="logo-star">✦</span>
             </span>
           ))}
         </div>

@@ -119,8 +119,9 @@ export function NumberCounter({
       height: style?.height === "100%" ? "100%" : "max-content",
       textAlign: align,
       color,
-      cursor: autoStart ? "default" : "pointer",
+      cursor: autoStart ? "inherit" : "pointer",
       userSelect: "none",
+      fontVariantNumeric: "tabular-nums",
     }),
     [style, align, color, autoStart]
   );
@@ -130,8 +131,8 @@ export function NumberCounter({
       ref={ref}
       style={containerStyle}
       className={className}
-      aria-live="polite"
-      tabIndex={0}
+      role="img"
+      aria-label={`${formatNumber(end, decimals)}${suffix}`}
       onClick={() => {
         if (!autoStart) setIsCounting(true);
       }}

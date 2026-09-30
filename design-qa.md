@@ -1,23 +1,20 @@
 # Design QA
 
-Source checked: https://xtrmvisuals.framer.media/
+Direction: premium motion portfolio in the spirit of lusion.co (reference site was not reachable from the build sandbox; design follows its known patterns).
 
 Local app checked: http://localhost:5173/
 
-Scope: runnable local React/Vite recreation of the first screen and the pasted NumberCounter behavior. This is not a full Framer export.
-
 Evidence:
 
-- Desktop source screenshot captured at 1440 x 1200.
-- Desktop local screenshot captured at 1440 x 1200.
-- Mobile local screenshot captured at 390 x 844.
+- Hero captured at 1920 x 1080, 1400 x 900, 1280 x 720, 820 x 1180 and 390 x 844 after the preloader: portrait prominent on the right, simple badge arc on its left, comment cards clear of the face; tablet/mobile stack with 3/3 badges.
+- Full-page passes at 1440 x 900, 820 x 1180 and 390 x 844: no horizontal page scroll, no console errors.
+- Interactions verified in Chromium: every header link lands exactly on its section, menu opens/closes (Esc), reel and "Watch showreel" open the video lightbox, services hover preview follows the cursor, contact form falls back to a pre-filled email while no Web3Forms key is set.
 - Production build passed.
 - Sites worker test passed.
 
 Notes:
 
-- The pasted Framer component was adapted to normal React by replacing Framer-only APIs with IntersectionObserver.
-- A small set of visible Framer image assets was copied locally into `public/assets`.
-- The page follows the loaded browser version's black navigation, magenta hero, dashed borders, pill CTAs, review cards, ticker, and media preview.
+- Contact form: paste a Web3Forms access key into `WEB3FORMS_KEY` in `src/Contact.jsx` to send submissions directly; until then it opens the visitor's email app addressed to `CONTACT_EMAIL`.
+- Stats (see the note in `src/StatsBand.jsx`) and the brand-name marquee were carried over unchanged; replace them if they aren't final.
 
 final result: passed
