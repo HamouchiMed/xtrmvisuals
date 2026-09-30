@@ -10,7 +10,9 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    allowedHosts: ["terminal.local"],
+    // terminal.local + the common tunnel services, so a client can open the
+    // dev/preview server through a tunnel link (a leading dot = any subdomain)
+    allowedHosts: ["terminal.local", ".trycloudflare.com", ".ngrok-free.app", ".ngrok.app", ".loca.lt"],
     warmup: {
       clientFiles: ["./src/main.jsx"],
     },
