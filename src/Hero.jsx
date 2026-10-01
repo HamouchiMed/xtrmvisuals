@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { HeroGL, heroBackgrounds } from "./HeroGL.jsx";
+import { useEffect, useRef } from "react";
+import { HeroTimeline } from "./HeroTimeline.jsx";
 import { RotatingWord } from "./RotatingWord.jsx";
 import { Words, useVisibleFrame } from "./reveal.jsx";
 import { anchorClick, getLenis } from "./lenis.js";
@@ -22,16 +22,11 @@ export function Hero() {
   const heroRef = useRef(null);
   const figureRef = useRef(null);
   const state = useRef({ tx: 0, ty: 0, cx: 0, cy: 0, layers: null });
-  // ?bg=<name> previews another hero background (see heroBackgrounds)
-  const [bg] = useState(() => {
-    const q = new URLSearchParams(window.location.search).get("bg");
-    return heroBackgrounds.includes(q) ? q : "aurora";
-  });
 
   useEffect(() => {
     const hero = heroRef.current;
     const s = state.current;
-    s.fine =window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    s.fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     s.layers = [
       [hero.querySelector(".tool-chips"), 22],
       [hero.querySelector(".floating-comments"), 14],
@@ -44,7 +39,27 @@ export function Hero() {
       s.ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
     };
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
+
+    // Tell the timeline where the portrait is, so its dark halo sits behind it.
+    const place = () => {
+      const tl = hero.querySelector(".hero-tl");
+      const fig = figureRef.current;
+      if (!tl || !fig) return;
+      const t = tl.getBoundingClientRect();
+      const f = fig.getBoundingClientRect();
+      if (!t.width || !t.height) return;
+      hero.style.setProperty("--fig-x", `${((f.left + f.width / 2 - t.left) / t.width) * 100}%`);
+      hero.style.setProperty("--fig-y", `${((f.top + f.height * 0.45 - t.top) / t.height) * 100}%`);
+      hero.style.setProperty("--fig-w", `${(f.width / t.width) * 100}%`);
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(hero);
+
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      ro.disconnect();
+    };
   }, []);
 
   // Pointer parallax (chips / comments / portrait at different depths) and a
@@ -74,7 +89,7 @@ export function Hero() {
   return (
     <div className="hero-shell">
       <section className="hero" id="top" ref={heroRef} aria-label="Introduction">
-        <HeroGL glowRef={figureRef} variant={bg} />
+        <HeroTimeline />
         <div className="hero-grain" aria-hidden="true"></div>
 
         <div className="hero-copy">
