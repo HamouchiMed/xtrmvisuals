@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { HeroGL } from "./HeroGL.jsx";
+import { useEffect, useRef, useState } from "react";
+import { HeroGL, heroBackgrounds } from "./HeroGL.jsx";
 import { RotatingWord } from "./RotatingWord.jsx";
 import { Words, useVisibleFrame } from "./reveal.jsx";
 import { anchorClick, getLenis } from "./lenis.js";
@@ -22,6 +22,11 @@ export function Hero() {
   const heroRef = useRef(null);
   const figureRef = useRef(null);
   const state = useRef({ tx: 0, ty: 0, cx: 0, cy: 0, layers: null });
+  // ?bg=<name> previews another hero background (see heroBackgrounds)
+  const [bg] = useState(() => {
+    const q = new URLSearchParams(window.location.search).get("bg");
+    return heroBackgrounds.includes(q) ? q : "aurora";
+  });
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -69,7 +74,7 @@ export function Hero() {
   return (
     <div className="hero-shell">
       <section className="hero" id="top" ref={heroRef} aria-label="Introduction">
-        <HeroGL glowRef={figureRef} />
+        <HeroGL glowRef={figureRef} variant={bg} />
         <div className="hero-grain" aria-hidden="true"></div>
 
         <div className="hero-copy">
