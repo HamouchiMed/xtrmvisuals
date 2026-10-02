@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Words } from "./reveal.jsx";
 
 const skills = [
   {
@@ -56,95 +57,44 @@ const skills = [
   },
 ];
 
-const BAR_MS = 1200; // cinematic fill per bar
-const GAP_MS = 130; // pause before the next bar starts
+const BAR_MS = 1400; // fill duration per bar
+const STAGGER_MS = 110; // each bar starts a beat after the previous one
 
-function SkillGroup({ group, items }) {
+function SkillGroup({ group, items, index }) {
   const ref = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-
+    if (!el) return undefined;
     const rows = Array.from(el.querySelectorAll(".bar-row")).map((row) => ({
-      fill: row.querySelector(".bar-fill"),
       pct: row.querySelector(".bar-pct"),
-      target: Number(row.dataset.level),
+      fill: row.querySelector(".bar-fill"),
     }));
+    let raf = 0;
 
-    let rafs = [];
-    let timers = [];
-    let runId = 0; // bumps on every play/reset so stale loops abort
-
-    const clearPending = () => {
-      rafs.forEach(cancelAnimationFrame);
-      timers.forEach(clearTimeout);
-      rafs = [];
-      timers = [];
-    };
-
-    const reset = () => {
-      runId += 1;
-      clearPending();
-      rows.forEach((r) => {
-        r.fill.style.transition = "none";
-        r.fill.style.width = "0%";
-        r.pct.textContent = "0%";
-        r.pct.style.opacity = "0";
-      });
-    };
-
-    const animateRow = (r, token) =>
-      new Promise((resolve) => {
-        r.pct.style.opacity = "1";
-        r.fill.style.transition = "none";
-        r.fill.style.width = "0%";
-        r.pct.textContent = "0%";
-        const kick = requestAnimationFrame(() => {
-          if (token !== runId) return;
-          r.fill.style.transition = `width ${BAR_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`;
-          r.fill.style.width = `${r.target}%`;
+    const run = () => {
+      el.classList.add("in");
+      // The CSS transition drives the bars; the numbers read the live fill
+      // width so the two can never drift apart.
+      const t0 = performance.now();
+      const total = BAR_MS + rows.length * STAGGER_MS + 100;
+      const step = (t) => {
+        rows.forEach((r, i) => {
+          const m = getComputedStyle(r.fill).transform;
+          const scale = m && m !== "none" ? parseFloat(m.slice(7)) : 0;
+          r.pct.textContent = `${Math.round(Math.min(scale * 100, items[i].level))}%`;
         });
-        rafs.push(kick);
-
-        let start = null;
-        const step = (t) => {
-          if (token !== runId) return resolve();
-          if (start === null) start = t;
-          const p = Math.min(1, (t - start) / BAR_MS);
-          const eased = 1 - Math.pow(1 - p, 3);
-          r.pct.textContent = `${Math.round(eased * r.target)}%`;
-          if (p < 1) {
-            rafs.push(requestAnimationFrame(step));
-          } else {
-            r.pct.textContent = `${r.target}%`;
-            resolve();
-          }
-        };
-        rafs.push(requestAnimationFrame(step));
-      });
-
-    const runSequence = async () => {
-      runId += 1;
-      const token = runId;
-      clearPending();
-      for (const r of rows) {
-        if (token !== runId) return;
-        await animateRow(r, token);
-        if (token !== runId) return;
-        await new Promise((res) => timers.push(setTimeout(res, GAP_MS)));
-      }
+        if (t - t0 < total) raf = requestAnimationFrame(step);
+        else rows.forEach((r, i) => (r.pct.textContent = `${items[i].level}%`));
+      };
+      raf = requestAnimationFrame(step);
     };
 
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
-          el.classList.add("in");
-          runSequence();
-        } else {
-          el.classList.remove("in");
-          reset();
-        }
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        run();
       },
       { threshold: 0.35 },
     );
@@ -152,19 +102,22 @@ function SkillGroup({ group, items }) {
 
     return () => {
       io.disconnect();
-      clearPending();
+      cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [items]);
 
   return (
-    <div className="skill-group" ref={ref}>
-      <span className="skill-label">{group}</span>
+    <div className="skill-group" ref={ref} style={{ "--g": index }}>
+      <div className="skill-head">
+        <span className="mono skill-idx">{String(index + 1).padStart(2, "0")}</span>
+        <span className="skill-label">{group}</span>
+      </div>
       <div className="skill-bars">
-        {items.map((s) => (
-          <div className="bar-row" key={s.name} data-level={s.level}>
+        {items.map((s, j) => (
+          <div className="bar-row" key={s.name} style={{ "--j": j, "--level": s.level / 100 }}>
             <div className="bar-meta">
               <span className="bar-name">{s.name}</span>
-              <span className="bar-pct">0%</span>
+              <span className="mono bar-pct">0%</span>
             </div>
             <span className="bar-track">
               <span className="bar-fill"></span>
@@ -181,13 +134,15 @@ export function Skills() {
     <section className="journey" id="skills" aria-label="Technical skills">
       <div className="journey-inner">
         <header className="journey-head">
-          <p className="section-eyebrow">The toolkit</p>
-          <h2 className="journey-heading">Technical Skills</h2>
+          <p className="mono section-tag">( 07 — The toolkit )</p>
+          <h2 className="section-heading" data-reveal>
+            <Words text="Technical" /> <em className="serif-accent"><Words text="Skills" /></em>
+          </h2>
         </header>
 
         <div className="skills-grid">
-          {skills.map((g) => (
-            <SkillGroup key={g.group} {...g} />
+          {skills.map((g, i) => (
+            <SkillGroup key={g.group} {...g} index={i} />
           ))}
         </div>
       </div>

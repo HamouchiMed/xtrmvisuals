@@ -12,8 +12,9 @@ export function StatsBand() {
   return (
     <section className="stats" aria-label="By the numbers">
       <div className="stats-inner">
-        {stats.map((s) => (
-          <div className="stat" key={s.label}>
+        {stats.map((s, i) => (
+          <div className="stat" key={s.label} data-reveal="fade" style={{ "--d": `${i * 0.08}s` }}>
+            <span className="mono stat-idx">0{i + 1}</span>
             <span className="stat-num">
               <NumberCounter end={s.end} suffix={s.suffix} duration={2} easing="easeOut" />
             </span>

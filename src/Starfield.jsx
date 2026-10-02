@@ -1,28 +1,54 @@
 import { useEffect, useRef } from "react";
 import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
+import { getLenis } from "./lenis.js";
 
-const COUNT = 2000;
+/* Page-wide WebGL starfield. Stars drift slowly, lean toward the pointer, and
+   rush toward the camera ("warp") in proportion to scroll speed. */
+
+const DEPTH = 16.0;
 
 const vertex = /* glsl */ `
   attribute vec3 position;
+  attribute vec3 color;
+  attribute float size;
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
   uniform float uSize;
+  uniform float uTravel;
+  uniform float uWarp;
+  varying vec3 vColor;
+  varying float vAlpha;
   void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = uSize / -mv.z;
+    vec3 p = position;
+    // endless tunnel: wrap stars back to the far plane once they pass the camera
+    p.z = mod(p.z + uTravel + ${(DEPTH / 2).toFixed(1)}, ${DEPTH.toFixed(1)}) - ${(DEPTH / 2 + 3).toFixed(1)};
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    float dist = -mv.z;
+    gl_PointSize = min(uSize * size * (1.0 + uWarp * 0.8) / dist, 14.0);
+    vAlpha = smoothstep(0.4, 2.5, dist) * smoothstep(${DEPTH.toFixed(1)}, ${(DEPTH - 5).toFixed(1)}, dist);
+    vColor = color;
     gl_Position = projectionMatrix * mv;
   }
 `;
 
 const fragment = /* glsl */ `
   precision highp float;
+  varying vec3 vColor;
+  varying float vAlpha;
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float a = smoothstep(0.5, 0.0, length(c));
-    gl_FragColor = vec4(vec3(1.0), a * 0.9);
+    gl_FragColor = vec4(vColor, a * a * vAlpha * 0.95);
   }
 `;
+
+const palette = [
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+  [0.8, 0.72, 1.0],
+  [0.96, 0.72, 0.93],
+];
 
 function supportsWebGL() {
   try {
@@ -38,16 +64,15 @@ export function Starfield() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !supportsWebGL()) return;
+    if (!container || !supportsWebGL()) return undefined;
 
+    const small = window.innerWidth < 760;
+    const COUNT = small ? 900 : 1800;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    const renderer = new Renderer({ alpha: true, dpr });
+    const renderer = new Renderer({ alpha: true, dpr, antialias: false });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     container.appendChild(gl.canvas);
-    gl.canvas.style.width = "100%";
-    gl.canvas.style.height = "100%";
-    gl.canvas.style.display = "block";
 
     const camera = new Camera(gl, { fov: 45 });
     camera.position.z = 5;
@@ -59,61 +84,75 @@ export function Starfield() {
     resize();
     window.addEventListener("resize", resize);
 
-    const positions = new Float32Array(COUNT * 3);
+    const position = new Float32Array(COUNT * 3);
+    const color = new Float32Array(COUNT * 3);
+    const size = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 15;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+      position[i * 3] = (Math.random() - 0.5) * 16;
+      position[i * 3 + 1] = (Math.random() - 0.5) * 16;
+      position[i * 3 + 2] = Math.random() * DEPTH;
+      const c = palette[Math.floor(Math.random() * palette.length)];
+      color.set(c, i * 3);
+      size[i] = 0.6 + Math.random() * Math.random() * 1.6;
     }
 
-    const geometry = new Geometry(gl, { position: { size: 3, data: positions } });
+    const geometry = new Geometry(gl, {
+      position: { size: 3, data: position },
+      color: { size: 3, data: color },
+      size: { size: 1, data: size },
+    });
     const program = new Program(gl, {
       vertex,
       fragment,
       transparent: true,
       depthTest: false,
-      uniforms: { uSize: { value: 42 * dpr } },
+      uniforms: { uSize: { value: 26 * dpr }, uTravel: { value: 0 }, uWarp: { value: 0 } },
     });
     program.setBlendFunc(gl.SRC_ALPHA, gl.ONE); // additive glow
     const stars = new Mesh(gl, { mode: gl.POINTS, geometry, program });
     stars.rotation.z = Math.PI / 4;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lenis = getLenis();
     let mx = 0;
     let my = 0;
     let rx = 0;
     let ry = 0;
+    let warp = 0;
+    let travel = 0;
     let raf = 0;
-    let disposed = false;
+    let last = 0;
 
     const onMove = (e) => {
       mx = (e.clientX / window.innerWidth) * 2 - 1;
       my = -((e.clientY / window.innerHeight) * 2 - 1);
     };
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
 
     const loop = (t) => {
-      if (disposed) return;
-      stars.rotation.z += 0.0004; // slow constant drift
-      if (!reduced) {
-        rx += (my * 0.3 - rx) * 0.05; // ease toward mouse
-        ry += (mx * 0.3 - ry) * 0.05;
-        stars.rotation.x = rx;
-        stars.rotation.y = ry + t * 0.00002;
-      }
+      const dt = Math.min(64, last ? t - last : 16) / 16.67;
+      last = t;
+      const v = Math.min(1, Math.abs(lenis?.velocity || 0) / 60);
+      warp += (v - warp) * 0.08;
+      travel += (0.0025 + warp * 0.16) * dt;
+      stars.rotation.z += 0.00025 * dt;
+      rx += (my * 0.18 - rx) * 0.04;
+      ry += (mx * 0.18 - ry) * 0.04;
+      stars.rotation.x = rx;
+      stars.rotation.y = ry;
+      program.uniforms.uTravel.value = travel;
+      program.uniforms.uWarp.value = warp;
       renderer.render({ scene: stars, camera });
       raf = requestAnimationFrame(loop);
     };
+
     raf = requestAnimationFrame(loop);
 
     return () => {
-      disposed = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
       if (gl.canvas.parentNode) gl.canvas.parentNode.removeChild(gl.canvas);
-      const ext = gl.getExtension("WEBGL_lose_context");
-      if (ext) ext.loseContext();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
 

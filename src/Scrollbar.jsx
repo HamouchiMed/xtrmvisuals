@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { getLenis } from "./lenis.js";
 
+/* Floating custom scrollbar (desktop) — draggable thumb synced with Lenis. */
 export function Scrollbar() {
   const trackRef = useRef(null);
   const thumbRef = useRef(null);
@@ -8,14 +9,14 @@ export function Scrollbar() {
   useEffect(() => {
     const track = trackRef.current;
     const thumb = thumbRef.current;
-    if (!track || !thumb) return;
+    if (!track || !thumb) return undefined;
 
     const lenis = getLenis();
     let thumbH = 30;
     let dragging = false;
+    let idle = 0;
 
-    const scrollable = () =>
-      Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const scrollable = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
 
     const update = () => {
       const max = scrollable();
@@ -23,19 +24,19 @@ export function Scrollbar() {
         track.style.opacity = "0";
         return;
       }
-      track.style.opacity = "1";
+      track.classList.add("is-active");
+      clearTimeout(idle);
+      idle = setTimeout(() => !dragging && track.classList.remove("is-active"), 1200);
       const trackH = track.clientHeight;
-      const winH = window.innerHeight;
       const docH = document.documentElement.scrollHeight;
-      thumbH = Math.max(30, (winH / docH) * trackH);
+      thumbH = Math.max(30, (window.innerHeight / docH) * trackH);
       const progress = window.scrollY / max;
-      const maxY = trackH - thumbH;
       thumb.style.height = `${thumbH}px`;
-      thumb.style.transform = `translateY(${progress * maxY}px)`;
+      thumb.style.transform = `translateY(${progress * (trackH - thumbH)}px)`;
     };
 
     const scrollTo = (y) => {
-      if (lenis) lenis.scrollTo(y, { immediate: true });
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
       else window.scrollTo(0, y);
     };
 
@@ -43,7 +44,7 @@ export function Scrollbar() {
       if (!dragging) return;
       const rect = track.getBoundingClientRect();
       const maxY = rect.height - thumbH;
-      const y = clampNum(e.clientY - rect.top - thumbH / 2, 0, maxY);
+      const y = Math.min(maxY, Math.max(0, e.clientY - rect.top - thumbH / 2));
       scrollTo((y / maxY) * scrollable());
     };
     const onDragEnd = () => {
@@ -68,6 +69,7 @@ export function Scrollbar() {
     update();
 
     return () => {
+      clearTimeout(idle);
       thumb.removeEventListener("pointerdown", onDragStart);
       window.removeEventListener("resize", update);
       window.removeEventListener("pointermove", onDragMove);
@@ -82,8 +84,4 @@ export function Scrollbar() {
       <div className="scrollbar-thumb" ref={thumbRef}></div>
     </div>
   );
-}
-
-function clampNum(v, a, b) {
-  return Math.min(b, Math.max(a, v));
 }

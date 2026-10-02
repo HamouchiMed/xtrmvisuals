@@ -30,9 +30,16 @@ const vertex = /* glsl */ `
 const fragment = /* glsl */ `
   precision highp float;
   uniform sampler2D uTexture;
+  uniform float uVelocity;
   varying vec2 vUv;
   void main() {
-    vec3 col = texture2D(uTexture, vUv).rgb;
+    // slight RGB split while the sheet is moving
+    vec2 shift = vec2(uVelocity * 0.006, 0.0);
+    vec3 col = vec3(
+      texture2D(uTexture, vUv + shift).r,
+      texture2D(uTexture, vUv).g,
+      texture2D(uTexture, vUv - shift).b
+    );
     float d = distance(vUv, vec2(0.5));
     col *= smoothstep(0.95, 0.35, d) * 0.25 + 0.75;
     gl_FragColor = vec4(col, 1.0);
@@ -56,24 +63,25 @@ export function WebGLReel({ src, preview, poster }) {
   const [useFallback, setUseFallback] = useState(false);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || !supportsWebGL()) {
+    if (!supportsWebGL()) {
       setUseFallback(true);
       const v = videoRef.current;
       if (v) {
         v.muted = true;
         v.play().catch(() => {});
       }
-      return;
+      return undefined;
     }
 
     const container = containerRef.current;
     const video = videoRef.current;
-    if (!container || !video) return;
+    if (!container || !video) return undefined;
 
     let raf = 0;
     let smoothVel = 0;
     let disposed = false;
+    let onScreen = false;
+    let hasVideoFrame = false;
     const lenis = getLenis();
 
     const renderer = new Renderer({ alpha: true, dpr: Math.min(2, window.devicePixelRatio || 1) });
@@ -88,6 +96,16 @@ export function WebGLReel({ src, preview, poster }) {
     camera.position.z = 2.5;
 
     const texture = new Texture(gl, { generateMipmaps: false, width: 1280, height: 720 });
+
+    // Show the poster until the first video frame is decoded (no black box).
+    if (poster) {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        if (!disposed && !hasVideoFrame) texture.image = img;
+      };
+      img.src = poster;
+    }
 
     const geometry = new Plane(gl, {
       width: 1,
@@ -122,44 +140,46 @@ export function WebGLReel({ src, preview, poster }) {
     video.muted = true;
     video.playsInline = true;
     video.loop = true;
-    video.play().catch(() => {});
     const onData = () => {
+      hasVideoFrame = true;
       texture.image = video;
     };
     video.addEventListener("loadeddata", onData);
 
-    const loop = (time) => {
-      if (disposed) return;
-      const rect = container.getBoundingClientRect();
-      const winH = window.innerHeight;
-      const onScreen = rect.bottom > 0 && rect.top < winH;
-
+    const loop = () => {
+      if (disposed || !onScreen) return;
       const rawV = clamp((lenis?.velocity || 0) / VELOCITY_DIVISOR, -1, 1);
       smoothVel += (rawV - smoothVel) * VELOCITY_SMOOTH;
-      program.uniforms.uVelocity.value = onScreen ? smoothVel : 0;
-
-      if (onScreen) {
-        if (video.paused) video.play().catch(() => {});
-        if (video.readyState >= 2) texture.needsUpdate = true;
-      } else if (!video.paused) {
-        video.pause();
-      }
-
+      program.uniforms.uVelocity.value = smoothVel;
+      if (hasVideoFrame && video.readyState >= 2) texture.needsUpdate = true;
       renderer.render({ scene: mesh, camera });
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+
+    // Only decode + draw while the reel is actually on screen.
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !onScreen) {
+        onScreen = true;
+        video.play().catch(() => {});
+        raf = requestAnimationFrame(loop);
+      } else if (!e.isIntersecting && onScreen) {
+        onScreen = false;
+        cancelAnimationFrame(raf);
+        video.pause();
+      }
+    });
+    io.observe(container);
 
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      io.disconnect();
       ro.disconnect();
       video.removeEventListener("loadeddata", onData);
       if (gl.canvas.parentNode) gl.canvas.parentNode.removeChild(gl.canvas);
-      const ext = gl.getExtension("WEBGL_lose_context");
-      if (ext) ext.loseContext();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, []);
+  }, [poster]);
 
   return (
     <div className="reel-gl" ref={containerRef} aria-hidden="true">
@@ -171,7 +191,6 @@ export function WebGLReel({ src, preview, poster }) {
         muted
         loop
         playsInline
-        autoPlay
         preload="metadata"
       />
     </div>
