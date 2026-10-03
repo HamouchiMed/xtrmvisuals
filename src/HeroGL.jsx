@@ -35,6 +35,18 @@ const fragment = /* glsl */ `
   float vignette(vec2 uv, float k) {
     return 1.0 - k * pow(length(uv - vec2(0.5, 0.5)) * 1.15, 2.2);
   }
+  // NLE-style clip label colours, picked per clip
+  vec3 clipColor(float h) {
+    if (h < 0.111) return vec3(0.24, 0.52, 0.98); // blue
+    if (h < 0.222) return vec3(0.95, 0.27, 0.27); // red
+    if (h < 0.333) return vec3(0.98, 0.82, 0.22); // yellow
+    if (h < 0.444) return vec3(0.24, 0.80, 0.42); // green
+    if (h < 0.555) return vec3(0.98, 0.55, 0.18); // orange
+    if (h < 0.666) return vec3(0.16, 0.78, 0.82); // cyan
+    if (h < 0.777) return vec3(0.96, 0.38, 0.70); // pink
+    if (h < 0.888) return vec3(0.62, 0.40, 0.98); // purple
+    return vec3(0.62, 0.88, 0.25); // lime
+  }
 
     vec3 scene(vec2 uv, vec2 p, float aspect) {
       vec3 col = vec3(0.035, 0.022, 0.07);
@@ -54,11 +66,16 @@ const fragment = /* glsl */ `
       float bx = smoothstep(gap, gap + edge, fx) * smoothstep(1.0 - gap, 1.0 - gap - edge, fx);
       float by = smoothstep(0.14, 0.2, fy) * smoothstep(0.86, 0.8, fy);
       float hc = hash(vec2(cell, r + 7.0));
-      vec3 cc = hc < 0.4 ? vec3(0.55, 0.36, 0.98) : hc < 0.65 ? vec3(0.86, 0.3, 0.82) : hc < 0.82 ? vec3(0.24, 0.55, 0.98) : vec3(0.16, 0.78, 0.58);
+      vec3 cc = clipColor(hc);
       float wave = 0.5 + 0.5 * sin(fx * seg * 140.0 + r) * noise(vec2(x * 30.0, r));
       float audio = step(0.5, fract(r * 0.5)) * smoothstep(0.5 - wave * 0.32, 0.5 - wave * 0.32 + 0.04, 1.0 - abs(fy - 0.5) * 2.0 * 0.5 - 0.25);
       float region = 0.08 + 0.92 * smoothstep(0.32, 0.75, uv.x);
-      col += cc * on * bx * by * (0.13 + 0.08 * audio) * region;
+      // paint clips in their own colour (mix, not add) so hues stay true over
+      // the purple base, plus a brighter label strip along each clip's top
+      float clip = on * bx * by * region;
+      col = mix(col, cc * 0.85, clip * (0.42 + 0.1 * audio));
+      float label = smoothstep(0.67, 0.69, fy) * (1.0 - smoothstep(0.79, 0.81, fy)); // uv.y runs bottom-up
+      col = mix(col, cc, clip * label * 0.45);
       float head = exp(-pow((uv.x - 0.585) * uRes.x * 0.5, 2.0));
       col += vec3(1.0, 0.45, 0.85) * head * 0.45 * region;
       return col * vignette(uv, 0.45);
